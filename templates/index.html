@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>CredScan - Dashboard</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2d3561">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CredScan">
+    <meta name="description" content="AI-powered transaction security system">
+    
+    <!-- Icons -->
+    <link rel="icon" href="{{ url_for('static', filename='images/1.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/1.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='images/1.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/1.png') }}">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-enhanced.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  </head>
+
+  <body>
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="sidebar">
+      <h2>CredScan</h2>
+      <a href="home.html">Home</a>
+      <a href="index.html" class="active">Dashboard</a>
+      <a href="visualizations.html">Visualizations</a>
+      <a href="analysis.html">Analysis</a>
+      <a href="model.html">ML Model</a>
+      <a href="amount-trends.html">Amount Trends</a>
+      <a href="feature.html">Feature</a>
+      <a href="theory.html">Theory</a>
+    </nav>
+    <div class="main-content">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">📊 CredScan Dashboard</h1>
+        <div class="user-profile">
+          <div class="user-avatar">F</div>
+          <span class="user-name">Finxan</span>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Grid Layout -->
+      <div class="dashboard-grid">
+        <!-- Left Section: Upload & Overview -->
+        <div class="dashboard-left">
+          <!-- Upload Section -->
+          <div class="upload-card">
+            <div class="upload-header">
+              <h2><i class="fas fa-cloud-upload-alt"></i> Upload Data</h2>
+              <p>Upload your transaction CSV file to analyze</p>
+            </div>
+            <div class="upload-area" id="upload-area">
+              <div class="upload-icon">
+                <i class="fas fa-file-csv"></i>
+              </div>
+              <div class="upload-text">Drag & Drop CSV File</div>
+              <div class="upload-subtext">or click to browse</div>
+              <input type="file" id="csvFile" accept=".csv" style="display: none;" />
+              <button class="upload-btn" onclick="document.getElementById('csvFile').click()">
+                <i class="fas fa-folder-open"></i> Browse Files
+              </button>
+            </div>
+            <div class="file-info" id="file-info" style="display: none;">
+              <i class="fas fa-check-circle"></i>
+              <span id="file-name">No file selected</span>
+            </div>
+          </div>
+
+          <!-- Processing Status -->
+          <div class="overview-processing" id="overview-processing">
+            <div class="overview-spinner"></div>
+            <div class="overview-text">Processing your data...</div>
+          </div>
+
+          <!-- Success Message -->
+          <div id="success-message" class="success-message"></div>
+
+          <!-- Data Overview Section -->
+          <div class="overview-card" id="overview-section">
+            <h2><i class="fas fa-chart-line"></i> Data Overview</h2>
+            <p class="overview-desc" id="overview-desc">
+              Upload your transaction CSV data to view detailed analytics and detect fraudulent patterns using our advanced ML models.
+            </p>
+            <div id="overview-metrics" class="metrics-list"></div>
+          </div>
+        </div>
+
+        <!-- Right Section: Stats Cards -->
+        <div class="dashboard-right">
+          <div class="stat-card purple">
+            <div class="stat-icon">
+              <i class="fas fa-database"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Total Transactions</div>
+              <div class="stat-value" id="total-transactions">0</div>
+              <div class="stat-change" id="total-change">Upload data to view</div>
+            </div>
+          </div>
+
+          <div class="stat-card pink">
+            <div class="stat-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Fraud Detected</div>
+              <div class="stat-value" id="fraud-count">0</div>
+              <div class="stat-change" id="fraud-change">0% of total</div>
+            </div>
+          </div>
+
+          <div class="stat-card blue">
+            <div class="stat-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Safe Transactions</div>
+              <div class="stat-value" id="safe-count">0</div>
+              <div class="stat-change" id="safe-change">0% of total</div>
+            </div>
+          </div>
+
+          <!-- Quick Actions Card -->
+          <div class="quick-actions-card">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            <div class="action-buttons">
+              <a href="visualizations.html" class="action-btn">
+                <i class="fas fa-chart-pie"></i>
+                <span>View Charts</span>
+              </a>
+              <a href="model.html" class="action-btn">
+                <i class="fas fa-brain"></i>
+                <span>ML Models</span>
+              </a>
+              <a href="analysis.html" class="action-btn">
+                <i class="fas fa-microscope"></i>
+                <span>Analysis</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Features</h3>
+          <ul>
+            <li>Real-time Analysis</li>
+            <li>ML Model Predictions</li>
+            <li>Interactive Visualizations</li>
+            <li>Comprehensive Reports</li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Technologies</h3>
+          <ul>
+            <li>Python & Flask</li>
+            <li>Scikit-learn</li>
+            <li>XGBoost</li>
+            <li>Plotly.js</li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <a href="mailto:finxan@svcet.edu"><p>📧 finxan@svcet.edu</p></a>
+          <a href="tel:+919876543210"><p>📱 +91 98765 43210</p></a>
+          <a href="https://www.google.com/maps/place/SVCET" target="_blank"><p>📍 SVCET</p></a>
+        </div>
+        <div class="footer-section">
+          <h3>Legal</h3>
+          <a href="privacy-policy.html" target="_blank"><p>🔒 Privacy Policy</p></a>
+          <a href="terms-conditions.html" target="_blank"><p>📄 Terms & Conditions</p></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 CredScan. All rights reserved. created by <a href="#" target="_blank">Finxan</a></p>
+        <p>Built with ❤️ using Machine Learning</p>
+      </div>
+    </footer>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pwa.js') }}"></script>
+  </body>
+</html>
