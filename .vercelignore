@@ -1,0 +1,7 @@
+ml model/old model/
+dataset/
+__pycache__/
+*.pyc
+.git/
+.github/
+.vscode/
