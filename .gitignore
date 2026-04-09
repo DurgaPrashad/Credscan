@@ -9,11 +9,12 @@ venv/
 ENV/
 .venv
 
-# ML Models - keep only essential models
-ml model/old model/
+# ML Models - keep only essential models (removed this exclusion)
+# ml model/old model/
 
-# Datasets - too large for git
-dataset/
+# Datasets - keep test-2.csv, ignore others
+dataset/test-1.csv
+dataset/test-3.csv
 
 # IDE
 .vscode/
